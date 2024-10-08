@@ -1,0 +1,18 @@
+# this is for dynamic inventory 
+plugin: amazon-aws.aws_ec2
+regions:
+- us-east-1
+
+filters:
+  tag:Name: nginx
+  instance-state-name: running
+
+hostnames:
+- private_ip_address
+
+compose:
+# this sets the 'ansble_host' variable to connect with private IP address without 
+  ansible_host: private_ip_address
+
+
+# ansible-inventory -i aws_ec2.yaml --graph   this will display the list all private ips

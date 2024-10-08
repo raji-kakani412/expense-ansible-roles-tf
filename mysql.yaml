@@ -1,0 +1,9 @@
+- name: configuring mysql server
+  hosts: mysql
+  become: yes
+
+  vars_files:
+  - /var/expense/mysqlcredentials.yaml #vault file
+
+  roles:
+  - mysql

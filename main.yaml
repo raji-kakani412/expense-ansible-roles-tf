@@ -1,0 +1,10 @@
+- name: configuring {{ component }} server
+  hosts: all
+  become: yes
+
+  vars_files:
+  - "variables-{{ environment }}.yaml"
+
+  roles: 
+  - "{{ component }}"
+  # we must pass 2 arguments--component and environment

@@ -1,0 +1,63 @@
+
+- name: ansible install PyMySQL and Cryptography
+  ansible.builtin.pip:
+    name: 
+    - PyMySQL
+    - cryptography
+    executable: pip3.9
+
+- name: disable default nodejs
+  ansible.builtin.command: dnf module disable nodejs -y
+
+- name: enable nodejs 20
+  ansible.builtin.command: dnf module enable nodejs:20 -y
+
+- name: install nodejs and mysql
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop:
+  - nodejs
+  - mysql
+
+- name: create expense user
+  ansible.builtin.user:
+    name: expense
+
+- name: import tasks from common role
+  tags:
+  - deployment
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: app-prereq
+
+- name: install dependencies
+  tags:
+  - deployment
+  ansible.builtin.command: npm install
+  args:
+    chdir: /app #will go to app directory and install dependencies
+
+- name: copy backend service #copy module only works for files without variables
+  ansible.builtin.template:
+    src: backend.service.j2
+    dest: /etc/systemd/system/backend.service
+
+- name: import mysql data
+  community.mysql.mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_host: "{{ login_host }}"
+    target: /app/schema/backend.sql
+    name: all # name should be all if state is import/dump
+    state: import
+    
+- name: daemon reload
+  tags:
+  - deployment #-t <tagname> will run only those tasks mainly for filteration
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    state: restarted
+    name: backend
+
+
