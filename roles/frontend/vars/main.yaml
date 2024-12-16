@@ -1,3 +1,3 @@
-backend_host: backend.devops-aws.tech
+backend_host: backend.app-dev.devops-aws.tech
 app_location: /usr/share/nginx/html
 component: frontend

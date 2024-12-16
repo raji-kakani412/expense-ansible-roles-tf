@@ -7,4 +7,4 @@
 
   roles: 
   - "{{ component }}"
-  # we must pass 2 arguments--component and environment
+  # we must pass 2 variables--component and environment
